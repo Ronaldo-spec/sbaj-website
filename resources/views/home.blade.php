@@ -9,6 +9,21 @@
         content="Website demonstrasi budidaya dan pemasok kepiting. Konten bisnis akan dilengkapi setelah verifikasi klien.">
     <title>{{ $site['brand_name'] }} | Budidaya & Supplier Kepiting</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Keep skip navigation accessible but visually hidden, even before Vite CSS loads. --}}
+    <style>
+        .skip-link:not(:focus-visible) {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            clip-path: inset(50%);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -18,11 +33,6 @@
             <a class="brand" href="#profil" aria-label="Kembali ke bagian atas">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo SBAJ Farm" class="brand-logo" width="48"
                     height="48">
-                <path d="M4 19.5c5-5 9-5 14 0s7 5 10 1" stroke="currentColor" stroke-width="2.8"
-                    stroke-linecap="round" />
-                <path d="M4 25c5-5 9-5 14 0s7 5 10 1" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" />
-                <path d="M13 5l-3 7M19 5l3 7M13 10h6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" />
-                </svg>
                 <span>{{ $site['brand_name'] }}</span>
             </a>
 
@@ -48,9 +58,9 @@
         <section id="profil" class="hero" data-carousel aria-label="Galeri utama usaha">
             @foreach ($site['hero_slides'] as $slide)
                 <article class="hero-slide {{ $loop->first ? 'is-active' : '' }}" data-slide
-                    aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
+                    aria-hidden="{{ $loop->first ? 'false' : 'true' }}"
+                    style="--hero-image: url('{{ asset($slide['image']) }}'); --hero-position: {{ $slide['position'] }}; --hero-mobile-position: {{ $slide['mobile_position'] ?? $slide['position'] }}">
                     <img src="{{ asset($slide['image']) }}" alt="{{ $slide['alt'] }}"
-                        style="--hero-position: {{ $slide['position'] }}; --hero-mobile-position: {{ $slide['mobile_position'] ?? $slide['position'] }}"
                         @if ($loop->first) fetchpriority="high" @endif>
                     <div class="hero-shade" aria-hidden="true"></div>
                     @if (!empty($slide['title']) || !empty($slide['subtitle']))
