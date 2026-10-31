@@ -9,6 +9,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    <a class="skip-link" href="#tentang">Lewati navigasi ke konten utama</a>
     <header class="site-header" id="site-header">
         <div class="nav-shell">
             <a class="brand" href="#profil" aria-label="Kembali ke bagian atas">
@@ -44,13 +45,17 @@
                 <article class="hero-slide {{ $loop->first ? 'is-active' : '' }}"
                          data-slide aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
                     <img src="{{ asset($slide['image']) }}" alt="{{ $slide['alt'] }}"
-                         style="object-position: {{ $slide['position'] }}"
+                         style="--hero-position: {{ $slide['position'] }}; --hero-mobile-position: {{ $slide['mobile_position'] ?? $slide['position'] }}"
                          @if ($loop->first) fetchpriority="high" @endif>
                     <div class="hero-shade" aria-hidden="true"></div>
                     @if (!empty($slide['title']) || !empty($slide['subtitle']))
                         <div class="hero-caption">
                             @if (!empty($slide['title']))
+                                @if ($loop->first)
                                 <h1>{{ $slide['title'] }}</h1>
+                            @else
+                                <h2>{{ $slide['title'] }}</h2>
+                            @endif
                             @endif
                             @if (!empty($slide['subtitle']))
                                 <p>{{ $slide['subtitle'] }}</p>
