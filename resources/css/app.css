@@ -8,7 +8,7 @@
     --ink: #17213e;
     --muted: #647087;
     --accent: #f2b85b;
-    --header-height: 88px;
+    --header-height: 124px;
     --page-gutter: clamp(18px, 4.8vw, 64px);
 }
 
@@ -28,10 +28,10 @@ img { max-width: 100%; display: block; }
 .site-header { position: fixed; z-index: 100; inset: 0 0 auto; color: #fff; background: transparent; border-bottom: 1px solid rgba(255,255,255,.22); transition: background .28s ease, box-shadow .28s ease; }
 .site-header.is-scrolled, .site-header.is-menu-open { background: rgba(29,39,117,.97); box-shadow: 0 12px 34px rgba(4,12,55,.15); }
 .nav-shell { display: flex; justify-content: space-between; align-items: center; gap: 24px; width: min(1380px, calc(100% - 2 * var(--page-gutter))); min-height: var(--header-height); margin: auto; }
-.brand { display: inline-flex; align-items: center; flex-shrink: 0; gap: 14px; font: 800 1.2rem/1.2 'Manrope', system-ui, sans-serif; letter-spacing: .065em; }
-.brand-logo { width: 50px; height: 50px; flex: none; object-fit: contain; }
-.desktop-nav { display: flex; align-items: center; gap: clamp(18px, 2.25vw, 36px); }
-.desktop-nav a { display: inline-flex; align-items: center; min-height: 48px; font-size: 1rem; font-weight: 700; opacity: .95; transition: opacity .2s; }
+.brand { display: inline-flex; align-items: center; flex-shrink: 0; gap: 14px; font: 800 2rem/1.2 'Manrope', system-ui, sans-serif; letter-spacing: .065em; }
+.brand-logo { width: 100px; height: 100px; flex: none; object-fit: contain; }
+.desktop-nav { display: flex; align-items: center; gap: clamp(16px, 1.5vw, 24px); }
+.desktop-nav a { display: inline-flex; align-items: center; min-height: 56px; font-size: 1.75rem; font-weight: 700; opacity: .95; transition: opacity .2s; }
 .desktop-nav a:hover, .desktop-nav a:focus-visible { opacity: .7; }
 .menu-toggle { display: none; align-items: center; justify-content: center; flex-direction: column; flex: none; width: 48px; height: 48px; gap: 6px; border: 1px solid rgba(255,255,255,.32); border-radius: 12px; color: #fff; background: rgba(255,255,255,.06); cursor: pointer; }
 .menu-toggle span { display: block; width: 22px; height: 2px; background: currentColor; border-radius: 3px; transition: transform .22s, opacity .22s; }
@@ -109,9 +109,17 @@ img { max-width: 100%; display: block; }
 .whatsapp-fab.is-disabled:hover { transform: none; }
 .footer { padding: 24px 0; background: #091032; color: #b8c2dd; font-size: .84rem; line-height: 1.6; }
 
+/* Keep oversized desktop navigation from wrapping on laptops. */
+@media (max-width: 1500px) {
+    .desktop-nav { display: none; }
+    .menu-toggle { display: flex; }
+}
+
 /* Foldables, compact tablets and narrow desktop windows */
 @media (max-width: 1120px) {
-    :root { --header-height: 78px; }
+    :root { --header-height: 96px; }
+    .brand { font-size: 1.5rem; }
+    .brand-logo { width: 70px; height: 70px; }
     .desktop-nav { display: none; }
     .menu-toggle { display: flex; }
     .intro-layout, .story-layout, .news-layout, .contact-layout { grid-template-columns: 1fr; gap: 24px; }
@@ -131,9 +139,9 @@ img { max-width: 100%; display: block; }
     .gallery-grid figure:last-child:nth-child(odd) img { aspect-ratio: 16/7; }
 }
 @media (max-width: 679px) {
-    :root { --header-height: 72px; --page-gutter: clamp(16px, 5vw, 28px); }
-    .brand { font-size: 1.05rem; letter-spacing: .035em; }
-    .brand-logo { width: 42px; height: 42px; }
+    :root { --header-height: 80px; --page-gutter: clamp(16px, 5vw, 28px); }
+    .brand { font-size: 1.1rem; letter-spacing: .035em; }
+    .brand-logo { width: 48px; height: 48px; }
     .nav-shell { gap: 12px; }
     .hero-slide img { object-position: var(--hero-mobile-position, var(--hero-position, center)); }
     .hero-caption { bottom: calc(104px + env(safe-area-inset-bottom)); max-width: calc(100% - 2 * var(--page-gutter)); }
@@ -168,6 +176,8 @@ img { max-width: 100%; display: block; }
 /* Phones in landscape; avoid pushing text and indicators outside short screens */
 @media (max-height: 520px) and (orientation: landscape) {
     :root { --header-height: 58px; }
+    .brand { font-size: 1rem; }
+    .brand-logo { width: 42px; height: 42px; }
     .hero { min-height: 300px; }
     .hero-caption { bottom: 56px; max-width: min(620px, 72vw); }
     .hero-caption h1, .hero-caption h2 { font-size: clamp(1.5rem, 3.3vw, 2.4rem); margin-bottom: 5px; }
