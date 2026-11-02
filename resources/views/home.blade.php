@@ -8,6 +8,7 @@
     <meta name="description"
         content="Website demonstrasi budidaya dan pemasok kepiting. Konten bisnis akan dilengkapi setelah verifikasi klien.">
     <title>{{ $site['brand_name'] }} | Budidaya & Supplier Kepiting</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- Keep skip navigation accessible but visually hidden, even before Vite CSS loads. --}}
     <style>
