@@ -8,7 +8,7 @@
     --ink: #17213e;
     --muted: #647087;
     --accent: #f2b85b;
-    --header-height: 124px;
+    --header-height: 180px;
     --page-gutter: clamp(18px, 4.8vw, 64px);
 }
 
@@ -107,7 +107,7 @@ img {
     justify-content: space-between;
     align-items: center;
     gap: 24px;
-    width: min(1380px, calc(100% - 2 * var(--page-gutter)));
+    width: min(1800px, calc(100% - 2 * var(--page-gutter)));
     min-height: var(--header-height);
     margin: auto;
 }
@@ -117,13 +117,13 @@ img {
     align-items: center;
     flex-shrink: 0;
     gap: 14px;
-    font: 800 2rem/1.2 'Manrope', system-ui, sans-serif;
+    font: 800 3rem/1.2 'Manrope', system-ui, sans-serif;
     letter-spacing: .065em;
 }
 
 .brand-logo {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     flex: none;
     object-fit: contain;
 }
@@ -138,7 +138,7 @@ img {
     display: inline-flex;
     align-items: center;
     min-height: 56px;
-    font-size: 1.75rem;
+    font-size: 2.5rem;
     font-weight: 700;
     opacity: .95;
     transition: opacity .2s;
@@ -662,7 +662,7 @@ img {
 }
 
 /* Keep oversized desktop navigation from wrapping on laptops. */
-@media (max-width: 1500px) {
+@media (max-width: 1750px) {
     .desktop-nav {
         display: none;
     }
