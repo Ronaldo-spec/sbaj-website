@@ -131,14 +131,14 @@ img {
 .desktop-nav {
     display: flex;
     align-items: center;
-    gap: clamp(16px, 1.5vw, 24px);
+    gap: clamp(14px, 1.4vw, 20px);
 }
 
 .desktop-nav a {
     display: inline-flex;
     align-items: center;
     min-height: 56px;
-    font-size: 1.75rem;
+    font-size: 1.125rem;
     font-weight: 700;
     opacity: .95;
     transition: opacity .2s;
@@ -662,16 +662,6 @@ img {
 }
 
 /* Keep oversized desktop navigation from wrapping on laptops. */
-@media (max-width: 1500px) {
-    .desktop-nav {
-        display: none;
-    }
-
-    .menu-toggle {
-        display: flex;
-    }
-}
-
 /* Foldables, compact tablets and narrow desktop windows */
 @media (max-width: 1120px) {
     :root {
