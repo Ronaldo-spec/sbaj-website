@@ -48,6 +48,7 @@
                 <span></span><span></span><span></span>
             </button>
         </div>
+        <div class="header-wave" aria-hidden="true"><svg viewBox="0 0 600 28" preserveAspectRatio="none" focusable="false"><path d="M0 20 C140 22 240 10 355 13 S510 -1 600 7 L600 28 L0 28 Z" fill="#f2b85b"/><path d="M0 25 C140 27 240 15 355 18 S510 4 600 12 L600 28 L0 28 Z" fill="#1d2775"/></svg></div>
         <nav class="mobile-nav" id="mobile-nav" aria-label="Navigasi mobile" hidden>
             @foreach ($site['navigation'] as $item)
                 <a href="#{{ $item['target'] }}">{{ $item['label'] }}</a>
@@ -156,12 +157,14 @@
 
         <section class="section section-light" id="galeri">
             <div class="container">
+                <img class="gallery-watermark" src="{{ asset('images/logo.png') }}" alt="" aria-hidden="true" loading="lazy">
                 <span class="eyebrow">Dokumentasi</span>
                 <div class="section-heading reveal-item">
-                    <h2>Galeri Usaha</h2>
+                    <h2>Dokumentasi Kegiatan</h2>
                     <p>Foto sementara untuk menguji tampilan galeri. Bukan foto usaha klien.</p>
                 </div>
                 <div class="gallery-carousel" data-gallery-carousel>
+                    <button type="button" class="gallery-side gallery-side-prev" data-gallery-prev aria-label="Foto sebelumnya">‹</button>
                     <div class="gallery-viewport" data-gallery-viewport aria-label="Foto galeri usaha" tabindex="0">
                         @foreach ($site['gallery_images'] as $photo)
                             <figure class="reveal-item">
@@ -170,11 +173,8 @@
                             </figure>
                         @endforeach
                     </div>
+                    <button type="button" class="gallery-side gallery-side-next" data-gallery-next aria-label="Foto berikutnya">›</button>
                     <div class="gallery-pagination" data-gallery-pagination aria-label="Posisi galeri"></div>
-                    <div class="gallery-controls" data-gallery-controls hidden>
-                        <button type="button" class="gallery-control" data-gallery-prev aria-label="Foto sebelumnya">‹</button>
-                        <button type="button" class="gallery-control" data-gallery-next aria-label="Foto berikutnya">›</button>
-                    </div>
                 </div>
             </div>
             <div class="gallery-wave" aria-hidden="true">
