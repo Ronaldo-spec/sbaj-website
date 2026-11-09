@@ -19,6 +19,10 @@ return [
         ['image' => 'images/hero/hero-01.webp', 'alt' => 'Ilustrasi kepiting', 'caption' => 'Visual demonstrasi kepiting'],
         ['image' => 'images/hero/hero-02.webp', 'alt' => 'Ilustrasi area pesisir', 'caption' => 'Visual demonstrasi lingkungan budidaya'],
         ['image' => 'images/hero/hero-03.webp', 'alt' => 'Ilustrasi penanganan kepiting', 'caption' => 'Visual demonstrasi penanganan hasil'],
+        // Tambahan sementara untuk stress-test carousel >3 item; menggunakan foto demo yang sudah tersedia.
+        ['image' => 'images/hero/hero-01.webp', 'alt' => 'Foto demonstrasi kepiting, pengujian galeri keempat', 'caption' => 'DEMO 04 — Kepiting hidup'],
+        ['image' => 'images/hero/hero-03.webp', 'alt' => 'Foto demonstrasi sortir kepiting, pengujian galeri kelima', 'caption' => 'DEMO 05 — Proses sortir'],
+        ['image' => 'images/hero/hero-02.webp', 'alt' => 'Foto demonstrasi lingkungan budidaya, pengujian galeri keenam', 'caption' => 'DEMO 06 — Persiapan pasokan'],
     ],
 
     'hero_slides' => [
