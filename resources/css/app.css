@@ -1115,3 +1115,77 @@ img {
         transform: none;
     }
 }
+
+/* Gallery redesign — reference-inspired composition, without changing navbar dimensions. */
+.site-header { isolation: isolate; }
+.header-wave {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    width: min(230px, 23vw);
+    height: 16px;
+    pointer-events: none;
+    z-index: 1;
+}
+.header-wave svg { display: block; width: 100%; height: 100%; }
+#galeri {
+    background: radial-gradient(ellipse at 94% 12%, rgba(29,39,117,.09), transparent 34%),
+                linear-gradient(180deg, #f8faff 0%, #f0f4fb 100%);
+}
+#galeri .container { position: relative; }
+.gallery-watermark {
+    position: absolute;
+    right: 0;
+    top: -16px;
+    width: clamp(95px, 12vw, 175px);
+    opacity: .075;
+    pointer-events: none;
+    filter: grayscale(1);
+}
+#galeri .eyebrow { letter-spacing: .24em; }
+#galeri .section-heading h2 { max-width: 680px; }
+.gallery-carousel { position: relative; }
+.gallery-viewport { padding: 3px 0 8px; }
+.gallery-viewport figure {
+    position: relative;
+    box-shadow: 0 14px 28px rgba(17,25,78,.12);
+}
+.gallery-viewport figcaption {
+    position: absolute;
+    inset: auto 0 0;
+    min-height: 0;
+    padding: 16px 18px;
+    background: linear-gradient(0deg, rgba(9,16,51,.93), rgba(9,16,51,.65) 68%, transparent);
+    border-left: 3px solid var(--accent);
+}
+.gallery-side {
+    position: absolute;
+    top: calc(50% - 22px);
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--blue-deep);
+    box-shadow: 0 4px 15px rgba(10,20,60,.25);
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+.gallery-side-prev { left: -24px; }
+.gallery-side-next { right: -24px; }
+.gallery-side:hover, .gallery-side:focus-visible { background: var(--blue); }
+.gallery-side[hidden] { display: none; }
+.gallery-pagination { margin-top: 14px; }
+.gallery-wave { height: clamp(54px, 7vw, 100px); }
+.gallery-wave path:first-child { fill: var(--blue); }
+@media (max-width: 679px) {
+    .header-wave { width: 130px; height: 10px; }
+    .gallery-side-prev { left: -12px; }
+    .gallery-side-next { right: -12px; }
+    .gallery-side { width: 38px; height: 38px; font-size: 1.5rem; }
+    #galeri .section-heading { align-items: flex-start; }
+    .gallery-watermark { width: 95px; }
+}
