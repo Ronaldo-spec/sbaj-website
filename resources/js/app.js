@@ -141,3 +141,49 @@ if (toggle && mobileNav && header) {
 
     compactNavigation.addEventListener('change', closeMenu);
 }
+
+/* Highlight the navigation item for the section currently below the fixed header. */
+const navigationLinks = Array.from(document.querySelectorAll('.desktop-nav a[href^="#"], .mobile-nav a[href^="#"]'));
+const navigationSections = [...new Set(navigationLinks.map((link) => link.getAttribute('href').slice(1)))]
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+const syncActiveNavigation = () => {
+    if (!navigationSections.length) return;
+
+    const headerHeight = header?.getBoundingClientRect().height ?? 0;
+    const marker = headerHeight + 2;
+    let activeSection = navigationSections[0];
+
+    for (const section of navigationSections) {
+        if (section.getBoundingClientRect().top <= marker) activeSection = section;
+        else break;
+    }
+
+    // At the very bottom, the final section can be shorter than the viewport.
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+        activeSection = navigationSections[navigationSections.length - 1];
+    }
+
+    navigationLinks.forEach((link) => {
+        const active = link.getAttribute('href') === `#${activeSection.id}`;
+        link.classList.toggle('is-active', active);
+        if (active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+    });
+};
+
+if (navigationSections.length) {
+    if ('IntersectionObserver' in window) {
+        const sectionObserver = new IntersectionObserver(syncActiveNavigation, {
+            rootMargin: '-15% 0px -65% 0px',
+            threshold: 0,
+        });
+        navigationSections.forEach((section) => sectionObserver.observe(section));
+    }
+
+    window.addEventListener('scroll', syncActiveNavigation, { passive: true });
+    window.addEventListener('resize', syncActiveNavigation);
+    window.addEventListener('hashchange', syncActiveNavigation);
+    syncActiveNavigation();
+}
