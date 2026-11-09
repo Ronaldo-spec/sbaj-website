@@ -170,11 +170,18 @@
                             </figure>
                         @endforeach
                     </div>
+                    <div class="gallery-pagination" data-gallery-pagination aria-label="Posisi galeri"></div>
                     <div class="gallery-controls" data-gallery-controls hidden>
                         <button type="button" class="gallery-control" data-gallery-prev aria-label="Foto sebelumnya">‹</button>
                         <button type="button" class="gallery-control" data-gallery-next aria-label="Foto berikutnya">›</button>
                     </div>
                 </div>
+            </div>
+            <div class="gallery-wave" aria-hidden="true">
+                <svg viewBox="0 0 1440 96" preserveAspectRatio="none" focusable="false">
+                    <path d="M0,38 C210,105 410,0 650,42 C880,85 1090,2 1440,44 L1440,96 L0,96 Z" fill="#ffffff"></path>
+                    <path d="M0,38 C210,105 410,0 650,42 C880,85 1090,2 1440,44" fill="none" stroke="#f2b85b" stroke-width="5"></path>
+                </svg>
             </div>
         </section>
 
