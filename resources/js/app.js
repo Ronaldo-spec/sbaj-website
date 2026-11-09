@@ -188,97 +188,139 @@ if (navigationSections.length) {
     syncActiveNavigation();
 }
 
-/* Gallery carousel — auto-advances one photo every 4.5 seconds while visible. */
+/* Seamless gallery loop: cloned edge slides make the wrap visually continuous. */
 const gallery = document.querySelector('[data-gallery-carousel]');
 if (gallery) {
     const viewport = gallery.querySelector('[data-gallery-viewport]');
-    const photos = Array.from(viewport.querySelectorAll('figure'));
+    const originals = Array.from(viewport.querySelectorAll('figure'));
     const pagination = gallery.querySelector('[data-gallery-pagination]');
     const previous = gallery.querySelector('[data-gallery-prev]');
     const next = gallery.querySelector('[data-gallery-next]');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const INTERVAL_MS = 4500;
-    let index = 0;
+    const count = originals.length;
+    let position = count;
     let timer = null;
+    let settleTimer = null;
     let visible = false;
-    let pointerDragging = false;
+    let dragging = false;
     let keyboardInteracting = false;
+    let repositioning = false;
 
-    const visibleCount = () => {
-        if (!photos.length) return 0;
-        const gap = parseFloat(getComputedStyle(viewport).columnGap) || 0;
-        const width = photos[0].getBoundingClientRect().width;
-        return width ? Math.max(1, Math.round((viewport.clientWidth + gap) / (width + gap))) : 1;
+    const clone = (item) => {
+        const copy = item.cloneNode(true);
+        copy.removeAttribute('id');
+        copy.classList.remove('reveal-item', 'is-visible');
+        copy.setAttribute('aria-hidden', 'true');
+        copy.setAttribute('inert', '');
+        return copy;
     };
-    const maxIndex = () => Math.max(0, photos.length - visibleCount());
+    if (count > 1) {
+        originals.forEach((item) => viewport.insertBefore(clone(item), originals[0]));
+        originals.forEach((item) => viewport.appendChild(clone(item)));
+    }
+    const slides = Array.from(viewport.querySelectorAll('figure'));
+    const logicalIndex = () => count ? ((position % count) + count) % count : 0;
+    const visibleCount = () => {
+        if (!slides.length) return 0;
+        const gap = parseFloat(getComputedStyle(viewport).columnGap) || 0;
+        const width = slides[0].getBoundingClientRect().width;
+        return width > 0 ? Math.max(1, Math.round((viewport.clientWidth + gap) / (width + gap))) : 1;
+    };
+    const enabled = () => count > visibleCount();
+    const slideLeft = (i) => slides[i].getBoundingClientRect().left
+        - viewport.getBoundingClientRect().left + viewport.scrollLeft;
     const stop = () => {
         if (timer !== null) clearInterval(timer);
         timer = null;
     };
     const updateDots = () => {
         pagination.querySelectorAll('button').forEach((dot, i) => {
-            const active = i === index;
+            const active = i === logicalIndex();
             dot.classList.toggle('is-active', active);
             if (active) dot.setAttribute('aria-current', 'true');
             else dot.removeAttribute('aria-current');
         });
     };
-    const goTo = (requested) => {
-        index = requested > maxIndex() ? 0 : Math.max(0, requested);
-        if (!photos[index]) return;
-        const left = photos[index].getBoundingClientRect().left
-            - viewport.getBoundingClientRect().left + viewport.scrollLeft;
-        viewport.scrollTo({ left, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    const teleport = (target) => {
+        repositioning = true;
+        viewport.classList.add('is-repositioning');
+        position = target;
+        viewport.scrollTo({ left: slideLeft(position), behavior: 'instant' });
         updateDots();
+        requestAnimationFrame(() => {
+            viewport.classList.remove('is-repositioning');
+            repositioning = false;
+        });
     };
-    const canPlay = () => maxIndex() > 0 && !document.hidden && visible
-        && !reducedMotion.matches && !pointerDragging && !keyboardInteracting;
+    const settle = () => {
+        clearTimeout(settleTimer);
+        if (!enabled() || repositioning) return;
+        // The clones are visually identical to the originals at the same logical position.
+        if (position >= count * 2) teleport(position - count);
+        else if (position < count) teleport(position + count);
+    };
+    const goTo = (target) => {
+        if (!enabled()) return;
+        clearTimeout(settleTimer);
+        position = target;
+        viewport.scrollTo({
+            left: slideLeft(position),
+            behavior: reducedMotion.matches ? 'instant' : 'smooth',
+        });
+        updateDots();
+        if (reducedMotion.matches) settle();
+        else settleTimer = setTimeout(settle, 850);
+    };
     const start = () => {
         stop();
-        if (canPlay()) timer = setInterval(() => goTo(index + 1), INTERVAL_MS);
+        if (!enabled() || !visible || document.hidden || reducedMotion.matches ||
+            dragging || keyboardInteracting) return;
+        timer = setInterval(() => goTo(position + 1), INTERVAL_MS);
     };
     const refresh = () => {
-        const maximum = maxIndex();
-        previous.hidden = maximum === 0;
-        next.hidden = maximum === 0;
+        const active = enabled();
+        previous.hidden = !active;
+        next.hidden = !active;
         pagination.replaceChildren();
-        for (let i = 0; i <= maximum; i++) {
-            if (maximum === 0) break;
-            const dot = document.createElement('button');
-            dot.type = 'button';
-            dot.className = 'gallery-dot';
-            dot.setAttribute('aria-label', `Tampilkan posisi galeri ${i + 1}`);
-            dot.addEventListener('click', () => { goTo(i); start(); });
-            pagination.appendChild(dot);
+        if (active) {
+            for (let i = 0; i < count; i++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'gallery-dot';
+                dot.setAttribute('aria-label', `Tampilkan foto galeri ${i + 1}`);
+                dot.addEventListener('click', () => { goTo(count + i); start(); });
+                pagination.appendChild(dot);
+            }
         }
-        goTo(Math.min(index, maximum));
+        teleport(count + logicalIndex());
         start();
     };
-    previous.addEventListener('click', () => { goTo(index === 0 ? maxIndex() : index - 1); start(); });
-    next.addEventListener('click', () => { goTo(index + 1); start(); });
+
+    previous.addEventListener('click', () => { goTo(position - 1); start(); });
+    next.addEventListener('click', () => { goTo(position + 1); start(); });
     viewport.addEventListener('scroll', () => {
-        if (!photos.length) return;
+        if (repositioning || !enabled()) return;
         const gap = parseFloat(getComputedStyle(viewport).columnGap) || 0;
-        const step = photos[0].getBoundingClientRect().width + gap;
+        const step = slides[0].getBoundingClientRect().width + gap;
         if (step > 0) {
-            index = Math.min(maxIndex(), Math.max(0, Math.round(viewport.scrollLeft / step)));
+            position = Math.max(0, Math.min(slides.length - 1, Math.round(viewport.scrollLeft / step)));
             updateDots();
         }
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(settle, 200);
     }, { passive: true });
 
-    // Hover over photos does not pause autoplay. Actual drag and keyboard interaction do.
-    viewport.addEventListener('pointerdown', () => { pointerDragging = true; stop(); });
-    window.addEventListener('pointerup', () => { pointerDragging = false; start(); });
-    window.addEventListener('pointercancel', () => { pointerDragging = false; start(); });
+    viewport.addEventListener('pointerdown', () => { dragging = true; stop(); });
+    window.addEventListener('pointerup', () => { dragging = false; start(); });
+    window.addEventListener('pointercancel', () => { dragging = false; start(); });
     gallery.addEventListener('keydown', () => { keyboardInteracting = true; stop(); });
-    gallery.addEventListener('focusout', () => {
-        requestAnimationFrame(() => {
-            if (!gallery.contains(document.activeElement)) {
-                keyboardInteracting = false;
-                start();
-            }
-        });
-    });
+    gallery.addEventListener('focusout', () => requestAnimationFrame(() => {
+        if (!gallery.contains(document.activeElement)) {
+            keyboardInteracting = false;
+            start();
+        }
+    }));
     document.addEventListener('visibilitychange', start);
     reducedMotion.addEventListener('change', refresh);
     window.addEventListener('resize', refresh);
@@ -288,9 +330,7 @@ if (gallery) {
             start();
         }, { threshold: 0.1 });
         observer.observe(gallery);
-    } else {
-        visible = true;
-    }
+    } else visible = true;
     refresh();
 }
 
