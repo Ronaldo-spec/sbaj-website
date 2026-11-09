@@ -188,12 +188,11 @@ if (navigationSections.length) {
     syncActiveNavigation();
 }
 
-/* Gallery carousel: automatic one-photo steps, with accessible manual controls. */
+/* Gallery carousel — auto-advances one photo every 4.5 seconds while visible. */
 const gallery = document.querySelector('[data-gallery-carousel]');
 if (gallery) {
     const viewport = gallery.querySelector('[data-gallery-viewport]');
     const photos = Array.from(viewport.querySelectorAll('figure'));
-    const controls = gallery.querySelector('[data-gallery-controls]');
     const pagination = gallery.querySelector('[data-gallery-pagination]');
     const previous = gallery.querySelector('[data-gallery-prev]');
     const next = gallery.querySelector('[data-gallery-next]');
@@ -201,61 +200,60 @@ if (gallery) {
     const INTERVAL_MS = 4500;
     let index = 0;
     let timer = null;
-    let visible = true;
-    let hovering = false;
-    let focused = false;
-    let dragging = false;
+    let visible = false;
+    let pointerDragging = false;
+    let keyboardInteracting = false;
 
     const visibleCount = () => {
         if (!photos.length) return 0;
         const gap = parseFloat(getComputedStyle(viewport).columnGap) || 0;
         const width = photos[0].getBoundingClientRect().width;
-        return width > 0 ? Math.max(1, Math.round((viewport.clientWidth + gap) / (width + gap))) : 1;
+        return width ? Math.max(1, Math.round((viewport.clientWidth + gap) / (width + gap))) : 1;
     };
     const maxIndex = () => Math.max(0, photos.length - visibleCount());
     const stop = () => {
-        if (timer !== null) window.clearInterval(timer);
+        if (timer !== null) clearInterval(timer);
         timer = null;
     };
-    const syncIndicators = () => {
+    const updateDots = () => {
         pagination.querySelectorAll('button').forEach((dot, i) => {
-            dot.classList.toggle('is-active', i === index);
-            if (i === index) dot.setAttribute('aria-current', 'true');
+            const active = i === index;
+            dot.classList.toggle('is-active', active);
+            if (active) dot.setAttribute('aria-current', 'true');
             else dot.removeAttribute('aria-current');
         });
     };
     const goTo = (requested) => {
-        const maximum = maxIndex();
-        index = requested > maximum ? 0 : Math.max(0, requested);
+        index = requested > maxIndex() ? 0 : Math.max(0, requested);
         if (!photos[index]) return;
-        const left = photos[index].offsetLeft - photos[0].offsetLeft;
+        const left = photos[index].getBoundingClientRect().left
+            - viewport.getBoundingClientRect().left + viewport.scrollLeft;
         viewport.scrollTo({ left, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
-        syncIndicators();
+        updateDots();
     };
-    const canPlay = () => maxIndex() > 0 && !reducedMotion.matches && !document.hidden
-        && visible && !hovering && !focused && !dragging;
+    const canPlay = () => maxIndex() > 0 && !document.hidden && visible
+        && !reducedMotion.matches && !pointerDragging && !keyboardInteracting;
     const start = () => {
         stop();
-        if (canPlay()) timer = window.setInterval(() => goTo(index + 1), INTERVAL_MS);
+        if (canPlay()) timer = setInterval(() => goTo(index + 1), INTERVAL_MS);
     };
     const refresh = () => {
         const maximum = maxIndex();
-        controls.hidden = maximum === 0;
+        previous.hidden = maximum === 0;
+        next.hidden = maximum === 0;
         pagination.replaceChildren();
-        if (maximum > 0) {
-            for (let i = 0; i <= maximum; i++) {
-                const dot = document.createElement('button');
-                dot.type = 'button';
-                dot.className = 'gallery-dot';
-                dot.setAttribute('aria-label', `Tampilkan posisi galeri ${i + 1}`);
-                dot.addEventListener('click', () => { goTo(i); start(); });
-                pagination.appendChild(dot);
-            }
+        for (let i = 0; i <= maximum; i++) {
+            if (maximum === 0) break;
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'gallery-dot';
+            dot.setAttribute('aria-label', `Tampilkan posisi galeri ${i + 1}`);
+            dot.addEventListener('click', () => { goTo(i); start(); });
+            pagination.appendChild(dot);
         }
         goTo(Math.min(index, maximum));
         start();
     };
-
     previous.addEventListener('click', () => { goTo(index === 0 ? maxIndex() : index - 1); start(); });
     next.addEventListener('click', () => { goTo(index + 1); start(); });
     viewport.addEventListener('scroll', () => {
@@ -264,22 +262,23 @@ if (gallery) {
         const step = photos[0].getBoundingClientRect().width + gap;
         if (step > 0) {
             index = Math.min(maxIndex(), Math.max(0, Math.round(viewport.scrollLeft / step)));
-            syncIndicators();
+            updateDots();
         }
     }, { passive: true });
 
-    gallery.addEventListener('mouseenter', () => { hovering = true; stop(); });
-    gallery.addEventListener('mouseleave', () => { hovering = false; start(); });
-    gallery.addEventListener('focusin', () => { focused = true; stop(); });
+    // Hover over photos does not pause autoplay. Actual drag and keyboard interaction do.
+    viewport.addEventListener('pointerdown', () => { pointerDragging = true; stop(); });
+    window.addEventListener('pointerup', () => { pointerDragging = false; start(); });
+    window.addEventListener('pointercancel', () => { pointerDragging = false; start(); });
+    gallery.addEventListener('keydown', () => { keyboardInteracting = true; stop(); });
     gallery.addEventListener('focusout', () => {
-        window.requestAnimationFrame(() => {
-            focused = gallery.contains(document.activeElement);
-            start();
+        requestAnimationFrame(() => {
+            if (!gallery.contains(document.activeElement)) {
+                keyboardInteracting = false;
+                start();
+            }
         });
     });
-    viewport.addEventListener('pointerdown', () => { dragging = true; stop(); });
-    window.addEventListener('pointerup', () => { dragging = false; start(); });
-    window.addEventListener('pointercancel', () => { dragging = false; start(); });
     document.addEventListener('visibilitychange', start);
     reducedMotion.addEventListener('change', refresh);
     window.addEventListener('resize', refresh);
@@ -289,6 +288,8 @@ if (gallery) {
             start();
         }, { threshold: 0.1 });
         observer.observe(gallery);
+    } else {
+        visible = true;
     }
     refresh();
 }
