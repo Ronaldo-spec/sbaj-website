@@ -188,49 +188,71 @@ if (navigationSections.length) {
     syncActiveNavigation();
 }
 
-/* Independent gallery carousel: one-photo steps with native scroll snapping. */
+/* Gallery carousel: automatic one-photo steps, with accessible manual controls. */
 const gallery = document.querySelector('[data-gallery-carousel]');
 if (gallery) {
     const viewport = gallery.querySelector('[data-gallery-viewport]');
     const photos = Array.from(viewport.querySelectorAll('figure'));
     const controls = gallery.querySelector('[data-gallery-controls]');
+    const pagination = gallery.querySelector('[data-gallery-pagination]');
     const previous = gallery.querySelector('[data-gallery-prev]');
     const next = gallery.querySelector('[data-gallery-next]');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const INTERVAL_MS = 4500;
     let index = 0;
     let timer = null;
     let visible = true;
     let hovering = false;
-    let interacting = false;
+    let focused = false;
+    let dragging = false;
 
     const visibleCount = () => {
         if (!photos.length) return 0;
         const gap = parseFloat(getComputedStyle(viewport).columnGap) || 0;
         const width = photos[0].getBoundingClientRect().width;
-        return Math.max(1, Math.round((viewport.clientWidth + gap) / (width + gap)));
+        return width > 0 ? Math.max(1, Math.round((viewport.clientWidth + gap) / (width + gap))) : 1;
     };
     const maxIndex = () => Math.max(0, photos.length - visibleCount());
     const stop = () => {
-        if (timer !== null) clearInterval(timer);
+        if (timer !== null) window.clearInterval(timer);
         timer = null;
     };
-    const goTo = (requested) => {
-        const max = maxIndex();
-        index = requested > max ? 0 : Math.max(0, requested);
-        if (!photos[index]) return;
-        const left = photos[index].getBoundingClientRect().left
-            - viewport.getBoundingClientRect().left + viewport.scrollLeft;
-        viewport.scrollTo({ left, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    const syncIndicators = () => {
+        pagination.querySelectorAll('button').forEach((dot, i) => {
+            dot.classList.toggle('is-active', i === index);
+            if (i === index) dot.setAttribute('aria-current', 'true');
+            else dot.removeAttribute('aria-current');
+        });
     };
+    const goTo = (requested) => {
+        const maximum = maxIndex();
+        index = requested > maximum ? 0 : Math.max(0, requested);
+        if (!photos[index]) return;
+        const left = photos[index].offsetLeft - photos[0].offsetLeft;
+        viewport.scrollTo({ left, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+        syncIndicators();
+    };
+    const canPlay = () => maxIndex() > 0 && !reducedMotion.matches && !document.hidden
+        && visible && !hovering && !focused && !dragging;
     const start = () => {
         stop();
-        if (!maxIndex() || reducedMotion.matches || document.hidden || !visible ||
-            hovering || interacting || gallery.contains(document.activeElement)) return;
-        timer = setInterval(() => goTo(index + 1), 4500);
+        if (canPlay()) timer = window.setInterval(() => goTo(index + 1), INTERVAL_MS);
     };
     const refresh = () => {
-        controls.hidden = maxIndex() === 0;
-        if (index > maxIndex()) goTo(maxIndex());
+        const maximum = maxIndex();
+        controls.hidden = maximum === 0;
+        pagination.replaceChildren();
+        if (maximum > 0) {
+            for (let i = 0; i <= maximum; i++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'gallery-dot';
+                dot.setAttribute('aria-label', `Tampilkan posisi galeri ${i + 1}`);
+                dot.addEventListener('click', () => { goTo(i); start(); });
+                pagination.appendChild(dot);
+            }
+        }
+        goTo(Math.min(index, maximum));
         start();
     };
 
@@ -240,15 +262,24 @@ if (gallery) {
         if (!photos.length) return;
         const gap = parseFloat(getComputedStyle(viewport).columnGap) || 0;
         const step = photos[0].getBoundingClientRect().width + gap;
-        if (step) index = Math.min(maxIndex(), Math.max(0, Math.round(viewport.scrollLeft / step)));
+        if (step > 0) {
+            index = Math.min(maxIndex(), Math.max(0, Math.round(viewport.scrollLeft / step)));
+            syncIndicators();
+        }
     }, { passive: true });
+
     gallery.addEventListener('mouseenter', () => { hovering = true; stop(); });
     gallery.addEventListener('mouseleave', () => { hovering = false; start(); });
-    gallery.addEventListener('focusin', stop);
-    gallery.addEventListener('focusout', () => requestAnimationFrame(start));
-    viewport.addEventListener('pointerdown', () => { interacting = true; stop(); });
-    window.addEventListener('pointerup', () => { interacting = false; start(); });
-    viewport.addEventListener('touchend', () => { interacting = false; start(); }, { passive: true });
+    gallery.addEventListener('focusin', () => { focused = true; stop(); });
+    gallery.addEventListener('focusout', () => {
+        window.requestAnimationFrame(() => {
+            focused = gallery.contains(document.activeElement);
+            start();
+        });
+    });
+    viewport.addEventListener('pointerdown', () => { dragging = true; stop(); });
+    window.addEventListener('pointerup', () => { dragging = false; start(); });
+    window.addEventListener('pointercancel', () => { dragging = false; start(); });
     document.addEventListener('visibilitychange', start);
     reducedMotion.addEventListener('change', refresh);
     window.addEventListener('resize', refresh);
