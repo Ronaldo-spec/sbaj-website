@@ -471,6 +471,15 @@ img {
     margin-bottom: 22px;
 }
 
+/* Align gallery entry spacing with the compact product section. */
+#galeri {
+    padding-top: clamp(32px, 4vw, 56px);
+}
+
+#galeri .section-heading {
+    margin-bottom: 22px;
+}
+
 .section-heading {
     display: flex;
     align-items: end;
