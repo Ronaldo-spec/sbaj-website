@@ -1117,17 +1117,6 @@ img {
 }
 
 /* Gallery redesign — reference-inspired composition, without changing navbar dimensions. */
-.site-header { isolation: isolate; }
-.header-wave {
-    position: absolute;
-    right: 0;
-    bottom: -1px;
-    width: min(230px, 23vw);
-    height: 16px;
-    pointer-events: none;
-    z-index: 1;
-}
-.header-wave svg { display: block; width: 100%; height: 100%; }
 #galeri {
     background: radial-gradient(ellipse at 94% 12%, rgba(29,39,117,.09), transparent 34%),
                 linear-gradient(180deg, #f8faff 0%, #f0f4fb 100%);
@@ -1182,7 +1171,6 @@ img {
 .gallery-wave { height: clamp(54px, 7vw, 100px); }
 .gallery-wave path:first-child { fill: var(--blue); }
 @media (max-width: 679px) {
-    .header-wave { width: 130px; height: 10px; }
     .gallery-side-prev { left: -12px; }
     .gallery-side-next { right: -12px; }
     .gallery-side { width: 38px; height: 38px; font-size: 1.5rem; }
