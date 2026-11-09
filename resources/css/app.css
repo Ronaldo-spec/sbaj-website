@@ -20,7 +20,7 @@
 
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: calc(var(--header-height) + 14px);
+    scroll-padding-top: var(--header-height);
 }
 
 body {
@@ -142,6 +142,12 @@ img {
     font-weight: 700;
     opacity: .95;
     transition: opacity .2s;
+}
+
+.desktop-nav a.is-active,
+.mobile-nav a.is-active {
+    color: var(--accent);
+    opacity: 1;
 }
 
 .desktop-nav a:hover,
@@ -378,7 +384,7 @@ img {
 /* Content */
 .section {
     padding: clamp(72px, 8vw, 126px) 0;
-    scroll-margin-top: var(--header-height);
+    scroll-margin-top: 0;
 }
 
 .section h2 {
