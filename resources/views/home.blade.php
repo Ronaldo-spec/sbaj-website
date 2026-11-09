@@ -114,13 +114,13 @@
         <section class="section section-light" id="produk">
             <div class="container">
                 <span class="eyebrow">Pilihan Produk</span>
-                <div class="section-heading">
+                <div class="section-heading reveal-item">
                     <h2>Katalog Produk</h2>
                     <p>Contoh kartu katalog. Nama, grade, ukuran, dan ketersediaan harus dikonfirmasi terlebih dahulu.
                     </p>
                 </div>
                 <div class="product-grid">
-                    <article class="product-card">
+                    <article class="product-card reveal-item">
                         <img src="{{ asset('images/hero/hero-01.webp') }}" alt="Visual demonstrasi kepiting"
                             loading="lazy">
                         <div class="product-content"><span class="card-meta">PRODUK DEMO 01</span>
@@ -129,7 +129,7 @@
                                 produk ↗</a>
                         </div>
                     </article>
-                    <article class="product-card">
+                    <article class="product-card reveal-item">
                         <img src="{{ asset('images/hero/hero-03.webp') }}" alt="Visual demonstrasi sortir kepiting"
                             loading="lazy">
                         <div class="product-content"><span class="card-meta">PRODUK DEMO 02</span>
@@ -143,7 +143,7 @@
         </section>
 
         <section class="section section-dark" id="budidaya">
-            <div class="container story-layout">
+            <div class="container story-layout reveal-item">
                 <div>
                     <span class="eyebrow">Budidaya</span>
                     <h2>Cerita di balik sumber pasokan.</h2>
@@ -157,22 +157,29 @@
         <section class="section section-light" id="galeri">
             <div class="container">
                 <span class="eyebrow">Dokumentasi</span>
-                <div class="section-heading">
+                <div class="section-heading reveal-item">
                     <h2>Galeri Usaha</h2>
                     <p>Foto sementara untuk menguji tampilan galeri. Bukan foto usaha klien.</p>
                 </div>
-                <div class="gallery-grid">
-                    @foreach ($site['hero_slides'] as $slide)
-                        <figure><img src="{{ asset($slide['image']) }}" alt="{{ $slide['alt'] }}" loading="lazy">
-                            <figcaption>{{ $slide['title'] }}</figcaption>
-                        </figure>
-                    @endforeach
+                <div class="gallery-carousel" data-gallery-carousel>
+                    <div class="gallery-viewport" data-gallery-viewport aria-label="Foto galeri usaha" tabindex="0">
+                        @foreach ($site['gallery_images'] as $photo)
+                            <figure class="reveal-item">
+                                <img src="{{ asset($photo['image']) }}" alt="{{ $photo['alt'] }}" loading="lazy">
+                                <figcaption>{{ $photo['caption'] }}</figcaption>
+                            </figure>
+                        @endforeach
+                    </div>
+                    <div class="gallery-controls" data-gallery-controls hidden>
+                        <button type="button" class="gallery-control" data-gallery-prev aria-label="Foto sebelumnya">‹</button>
+                        <button type="button" class="gallery-control" data-gallery-next aria-label="Foto berikutnya">›</button>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section class="section section-news" id="informasi">
-            <div class="container news-layout">
+            <div class="container news-layout reveal-item">
                 <div><span class="eyebrow">Informasi</span>
                     <h2>Kabar & Pembaruan</h2>
                 </div>
@@ -184,7 +191,7 @@
         </section>
 
         <section class="section section-contact" id="kontak">
-            <div class="container contact-layout">
+            <div class="container contact-layout reveal-item">
                 <div><span class="eyebrow">Kontak</span>
                     <h2>Mari membicarakan kebutuhan pasokan Anda.</h2>
                     <p>Informasi resmi kontak, lokasi, dan metode pemesanan akan diisi saat data klien tersedia.</p>
