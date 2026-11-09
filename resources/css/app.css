@@ -622,6 +622,11 @@ img {
     overscroll-behavior-x: contain;
 }
 
+.gallery-viewport.is-repositioning {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+}
+
 .gallery-viewport::-webkit-scrollbar { display: none; }
 
 .gallery-viewport figure {
