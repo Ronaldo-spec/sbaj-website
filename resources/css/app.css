@@ -561,6 +561,57 @@ img {
     border-radius: 18px;
 }
 
+#galeri {
+    position: relative;
+    padding-bottom: clamp(92px, 9vw, 132px);
+    overflow: hidden;
+}
+
+#galeri .container {
+    position: relative;
+    z-index: 1;
+}
+
+.gallery-wave {
+    position: absolute;
+    inset: auto 0 0;
+    height: clamp(42px, 6vw, 96px);
+    pointer-events: none;
+}
+
+.gallery-wave svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.gallery-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    min-height: 30px;
+    margin-top: 16px;
+}
+
+.gallery-pagination:empty { display: none; }
+
+.gallery-dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: #a3adc7;
+    cursor: pointer;
+    transition: width .2s ease, background .2s ease;
+}
+
+.gallery-dot.is-active {
+    width: 30px;
+    background: var(--accent);
+}
+
 .gallery-viewport {
     display: flex;
     gap: clamp(12px, 2vw, 22px);
