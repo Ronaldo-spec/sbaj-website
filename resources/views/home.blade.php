@@ -48,7 +48,6 @@
                 <span></span><span></span><span></span>
             </button>
         </div>
-        <div class="header-wave" aria-hidden="true"><svg viewBox="0 0 600 28" preserveAspectRatio="none" focusable="false"><path d="M0 20 C140 22 240 10 355 13 S510 -1 600 7 L600 28 L0 28 Z" fill="#f2b85b"/><path d="M0 25 C140 27 240 15 355 18 S510 4 600 12 L600 28 L0 28 Z" fill="#1d2775"/></svg></div>
         <nav class="mobile-nav" id="mobile-nav" aria-label="Navigasi mobile" hidden>
             @foreach ($site['navigation'] as $item)
                 <a href="#{{ $item['target'] }}">{{ $item['label'] }}</a>
