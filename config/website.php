@@ -14,6 +14,13 @@ return [
         ['label' => 'Kontak', 'target' => 'kontak'],
     ],
 
+    // Foto demonstrasi sementara; bukan dokumentasi usaha klien.
+    'gallery_images' => [
+        ['image' => 'images/hero/hero-01.webp', 'alt' => 'Ilustrasi kepiting', 'caption' => 'Visual demonstrasi kepiting'],
+        ['image' => 'images/hero/hero-02.webp', 'alt' => 'Ilustrasi area pesisir', 'caption' => 'Visual demonstrasi lingkungan budidaya'],
+        ['image' => 'images/hero/hero-03.webp', 'alt' => 'Ilustrasi penanganan kepiting', 'caption' => 'Visual demonstrasi penanganan hasil'],
+    ],
+
     'hero_slides' => [
         [
             'image' => 'images/hero/hero-01.webp',
